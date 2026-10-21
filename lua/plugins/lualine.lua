@@ -1,25 +1,45 @@
-return {
-	"nvim-lualine/lualine.nvim",
+    return {
+        "nvim-lualine/lualine.nvim",
 	dependencies = {
 		"nvim-tree/nvim-web-devicons",
-	},
+        },
 	config = function()
-		-- Función para hacer transparente un tema de lualine (opcional pero recomendado con imágenes de fondo)
+		-- Función para hacer transparente Lualine EXCEPTUANDO la sección 'a' (modos)
 		local function make_transparent(theme_name)
 			local status_ok, theme = pcall(require, "lualine.themes." .. theme_name)
 			if not status_ok then
 				return nil
 			end
 
-			for _, mode in pairs(theme) do
+			for mode_name, mode in pairs(theme) do
 				if type(mode) == "table" then
-					for _, section in pairs(mode) do
-						if type(section) == "table" and section.bg then
+					for section_name, section in pairs(mode) do
+						-- NO borra el fondo si la sección es 'a' (donde va NORMAL, INSERT, etc.)
+						if type(section) == "table" and section.bg and section_name ~= "a" then
 							section.bg = nil
 						end
 					end
 				end
 			end
+
+			-- Definimos colores bien diferenciados para cada modo:
+			-- 1. NORMAL: Celeste / Turquesa
+			theme.normal.a = { fg = "#1e2326", bg = "#7fbbb3", gui = "bold" }
+
+			-- 2. INSERT: Verde brillante
+			theme.insert.a = { fg = "#1e2326", bg = "#a7c080", gui = "bold" }
+
+			-- 3. VISUAL: Rosado / Magenta
+			theme.visual.a = { fg = "#1e2326", bg = "#d3939f", gui = "bold" }
+
+			-- 4. REPLACE: Rojo / Coral
+			theme.replace.a = { fg = "#1e2326", bg = "#e67e80", gui = "bold" }
+
+			-- 5. COMMAND (:): Amarillo
+			if theme.command then
+				theme.command.a = { fg = "#1e2326", bg = "#db302", gui = "bold" }
+			end
+
 			return theme
 		end
 
@@ -35,7 +55,6 @@ return {
 				},
 				ignore_focus = { "NvimTree" },
 				always_divide_middle = true,
-				-- Activamos globalstatus para que se vea más limpio con la imagen de fondo
 				globalstatus = true,
 				refresh = {
 					statusline = 1000,
@@ -46,12 +65,11 @@ return {
 			sections = {
 				lualine_a = { "mode" },
 				lualine_b = { "branch", "diff", "diagnostics" },
-				-- Modificamos filename para cambiarle el color del texto con color_file
 				lualine_c = {
 					{
 						"filename",
-						path = 1, -- Muestra ruta relativa (0 = solo nombre, 1 = ruta relativa, 2 = absoluta)
-						color = { fg = "#7fbbb3", gui = "bold" }, -- Cambia "#7fbbb3" por el color hexadecimal que quieras que resalte
+						path = 1,
+						color = { fg = "#7fbbb3", gui = "bold" },
 					},
 				},
 				lualine_x = { "encoding", "fileformat", "filetype" },
