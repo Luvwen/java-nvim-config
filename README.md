@@ -45,7 +45,6 @@ git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git ~/.config/nvim
 
 ```
 nvim
-
 ```
 
 On first launch, **lazy.nvim** will automatically bootstrap itself and begin downloading all required plugins. Restart Neovim once the installation finishes.
